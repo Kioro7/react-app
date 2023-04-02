@@ -17,16 +17,6 @@ const CreateOption = () => {
   );
 };
 
-// const Update = () => {
-//   if (gameUpdate != null)
-//   {
-//     document.getElementsByClassName("nameGame").value = gameUpdate.name;
-//     document.getElementsByClassName("developer").value = gameUpdate.developer;
-//     document.getElementsByClassName("genre").value = gameUpdate.genreId;
-//     document.getElementsByClassName("mode").value = gameUpdate.mode;
-//   }
-// };
-
 const GameCreate = ({ user, addGame }) => {
   useEffect(() => {
     const Update = () => {
