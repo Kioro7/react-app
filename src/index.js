@@ -13,6 +13,7 @@ import Register from "./Components/Registration/Registration";
 
 function App() {
   const [games, setGames] = useState([]);
+  const [upGame, setUpGame] = useState({});
   const addGame = (game) => setGames([...games, game]);
   const removeGame = (removeId) =>
     setGames(games.filter(({ Id }) => Id !== removeId));
@@ -54,11 +55,17 @@ function App() {
               <>
                 <Genre />
 
-                <GameCreate user={user} addGame={addGame} />
+                <GameCreate
+                  user={user}
+                  addGame={addGame}
+                  upGame={upGame}
+                  setGame={setGames}
+                />
 
                 <Game
                   user={user}
                   games={games}
+                  setUpGame={setUpGame}
                   setGames={setGames}
                   removeGame={removeGame}
                 />

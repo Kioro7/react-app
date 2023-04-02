@@ -1,33 +1,68 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./Style.css";
 import { genre } from "../../Components/Genre/Genre";
-import { gameUpdate } from "../../Components/Game/Game";
 
-const CreateOption = () => {
-  return (
-    <React.Fragment>
-      <select name="genre">
-        {genre.map(({ id, name }) => (
-          <option key={id} value={id}>
-            {name}
-          </option>
-        ))}
-      </select>
-    </React.Fragment>
-  );
-};
+const GameCreate = ({ user, addGame, upGame, setGame }) => {
+  const [nameGame, setName] = useState("");
+  const [developer, setDeveloper] = useState("");
+  const [mode, setMode] = useState("");
 
-const GameCreate = ({ user, addGame }) => {
   useEffect(() => {
-    const Update = () => {
-      console.log(gameUpdate);
-      document.getElementsByClassName("nameGame").value = gameUpdate.name;
-      document.getElementsByClassName("developer").value = gameUpdate.developer;
-      document.getElementsByClassName("genre").value = gameUpdate.genreId;
-      document.getElementsByClassName("mode").value = gameUpdate.mode;
+    setName(upGame.name);
+    setDeveloper(upGame.developer);
+    setMode(upGame.mode);
+    console.log(11111);
+  }, [upGame]);
+
+  const CreateOption = () => {
+    return (
+      <React.Fragment>
+        <select name="genre">
+          {genre.map(({ id, name }) => (
+            <option key={id} value={id}>
+              {name}
+            </option>
+          ))}
+        </select>
+      </React.Fragment>
+    );
+  };
+
+  const gameUpdate = async (e) => {
+    e.preventDefault();
+
+    const valueName = e.target.elements.nameGame.value;
+    const valueDev = e.target.elements.developer.value;
+    const valueMode = e.target.elements.mode.value;
+
+    const game = {
+      name: valueName,
+      developer: valueDev,
+      mode: valueMode,
     };
-    Update();
-  }, [gameUpdate]);
+
+    const requestOptions = {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(game),
+    };
+
+    const response = await fetch(`api/games/${upGame.id}`, requestOptions);
+
+    return await response.json().then(
+      (data) => {
+        console.log(data);
+        // response.status === 201 && addBlog(data)
+        if (response.ok) {
+          setGame(data);
+          e.target.elements.nameGame.value = "";
+          e.target.elements.developer.value = "";
+          e.target.elements.mode.value = "";
+        }
+      },
+      (error) => console.log(error)
+    );
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -73,6 +108,7 @@ const GameCreate = ({ user, addGame }) => {
     };
     createGame();
   };
+
   return (
     <React.Fragment>
       {user.isAuthenticated ? (
@@ -83,6 +119,7 @@ const GameCreate = ({ user, addGame }) => {
             <input
               type="text"
               name="nameGame"
+              value={nameGame}
               placeholder="Введите название игры"
             />{" "}
             <br />
@@ -92,6 +129,7 @@ const GameCreate = ({ user, addGame }) => {
             <input
               type="text"
               name="mode"
+              value={mode}
               placeholder="Введите режим игры"
             />{" "}
             <br />
@@ -99,10 +137,12 @@ const GameCreate = ({ user, addGame }) => {
             <input
               type="text"
               name="developer"
+              value={developer}
               placeholder="Введите разработчика игры"
             />{" "}
             <br />
-            <button type="submit">Создать / Изменить</button>
+            <button type="submit">Создать</button>
+            <button onClick={(e) => gameUpdate(e)}>Изменить</button>
           </form>
         </>
       ) : (

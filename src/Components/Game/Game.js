@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
 import "./Style.css";
 
-export let gameUpdate = {};
-
-const Game = ({ user, games, setGames, removeGame }) => {
+const Game = ({ user, setUpGame, games, setGames, removeGame }) => {
   useEffect(() => {
     const getGames = async () => {
       const requestOptions = {
@@ -11,7 +9,8 @@ const Game = ({ user, games, setGames, removeGame }) => {
       };
       return await fetch("api/games/", requestOptions)
         .then((response) => response.json())
-        .then((data) => {
+        .then(
+          (data) => {
             console.log("Data:", data);
             setGames(data);
           },
@@ -27,14 +26,14 @@ const Game = ({ user, games, setGames, removeGame }) => {
     const requestOptions = {
       method: "DELETE",
     };
-    return await fetch(`api/games/${id}`, requestOptions)
-    .then((response) => {
+    return await fetch(`api/games/${id}`, requestOptions).then(
+      (response) => {
         if (response.ok) {
           removeGame(id);
         }
       },
       (error) => console.log(error)
-    )
+    );
   };
 
   const gameItem = async ({ id }) => {
@@ -45,8 +44,7 @@ const Game = ({ user, games, setGames, removeGame }) => {
     return await fetch(`api/games/${id}`, requestOptions)
       .then((response) => response.json())
       .then((data) => {
-        gameUpdate = data;
-        console.log(gameUpdate);
+        setUpGame(data);
       });
   };
 
