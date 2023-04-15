@@ -86,7 +86,7 @@ const GameCreate = ({ user, addGame, upGame, setGame }) => {
       const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(game),
+        body: JSON.stringify(game)
       };
 
       console.log(requestOptions);
@@ -111,7 +111,7 @@ const GameCreate = ({ user, addGame, upGame, setGame }) => {
 
   return (
     <React.Fragment>
-      {user.isAuthenticated ? (
+      {user.isAuthenticated && user.userRole == "admin" ? (
         <>
           <h3>Добавление новой игры / Изменение игры</h3>
           <form onSubmit={handleSubmit}>

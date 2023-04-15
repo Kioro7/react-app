@@ -17,7 +17,7 @@ function App() {
   const addGame = (game) => setGames([...games, game]);
   const removeGame = (removeId) =>
     setGames(games.filter(({ Id }) => Id !== removeId));
-  const [user, setUser] = useState({ isAuthenticated: false, userName: "" });
+  const [user, setUser] = useState({ isAuthenticated: false, userName: "", userRole: "" });
 
   useEffect(() => {
     const getUser = async () => {

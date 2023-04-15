@@ -67,7 +67,7 @@ const Game = ({ user, setUpGame, games, setGames, removeGame }) => {
         }) => (
           <div className="Game" key={id} id={id}>
             <strong className="GameName"> {name} </strong>
-            {user.isAuthenticated ? (
+            {user.isAuthenticated && user.userRole == "admin" ? (
               <>
                 <button onClick={() => deleteItem({ id })}>Удалить</button>
                 <button onClick={() => gameItem({ id })}>Изменить</button>
