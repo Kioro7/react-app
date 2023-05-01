@@ -1,32 +1,45 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { Form, Button, Input, Select } from 'antd';
 import "./Style.css";
 import { genre } from "../../Components/Genre/Genre";
 
+const { Option } = Select
+
 const GameCreate = ({ user, addGame, upGame, setGame }) => {
-  const [nameGame, setName] = useState("");
-  const [developer, setDeveloper] = useState("");
-  const [mode, setMode] = useState("");
+  // const [nameGame, setName] = useState("");
+  // const [developer, setDeveloper] = useState("");
+  // const [mode, setMode] = useState("");
 
   useEffect(() => {
-    setName(upGame.name);
-    setDeveloper(upGame.developer);
-    setMode(upGame.mode);
+    // setName(upGame.name);
+    // setDeveloper(upGame.developer);
+    // setMode(upGame.mode);
     console.log(11111);
   }, [upGame]);
 
-  const CreateOption = () => {
-    return (
-      <React.Fragment>
-        <select name="genre">
-          {genre.map(({ id, name }) => (
-            <option key={id} value={id}>
-              {name}
-            </option>
-          ))}
-        </select>
-      </React.Fragment>
-    );
-  };
+  // const CreateOption = () => {
+  //   return (
+  //     <React.Fragment>
+  //       <Select
+  //       placeholder="Выберите жанр игры">
+  //       {genre.map(({ id, name }) => (
+  //         <Option key={id} value={id}>{name}</Option>
+  //           // <option key={id} value={id}>
+  //           //   {name}
+  //           // </option>
+  //         ))}
+  //       </Select>
+
+  //       {/* <select name="genre">
+  //         {genre.map(({ id, name }) => (
+  //           <option key={id} value={id}>
+  //             {name}
+  //           </option>
+  //         ))}
+  //       </select> */}
+  //     </React.Fragment>
+  //   );
+  // };
 
   const gameUpdate = async (e) => {
     e.preventDefault();
@@ -65,11 +78,12 @@ const GameCreate = ({ user, addGame, upGame, setGame }) => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const valueName = e.target.elements.nameGame.value;
-    const valueDev = e.target.elements.developer.value;
-    const valueGenre = e.target.elements.genre.value;
-    const valueMode = e.target.elements.mode.value;
+    console.log(e)
+    //e.preventDefault();
+    const valueName = e.nameGame;
+    const valueDev = e.developer;
+    const valueGenre = e.genre;
+    const valueMode = e.mode;
 
     console.log(genre[valueGenre]);
 
@@ -98,9 +112,9 @@ const GameCreate = ({ user, addGame, upGame, setGame }) => {
           // response.status === 201 && addBlog(data)
           if (response.ok) {
             addGame(data);
-            e.target.elements.nameGame.value = "";
-            e.target.elements.developer.value = "";
-            e.target.elements.mode.value = "";
+            e.nameGame = "";
+            e.developer = "";
+            e.mode = "";
           }
         },
         (error) => console.log(error)
@@ -114,36 +128,73 @@ const GameCreate = ({ user, addGame, upGame, setGame }) => {
       {user.isAuthenticated && user.userRole == "admin" ? (
         <>
           <h3>Добавление новой игры / Изменение игры</h3>
-          <form onSubmit={handleSubmit}>
-            <label>Название: </label>
-            <input
-              type="text"
-              name="nameGame"
-              value={nameGame}
-              placeholder="Введите название игры"
-            />{" "}
-            <br />
-            <label>Жанр игры: </label>
-            <CreateOption /> <br />
-            <label>Режим игры: </label>
-            <input
-              type="text"
-              name="mode"
-              value={mode}
-              placeholder="Введите режим игры"
-            />{" "}
-            <br />
-            <label>Разработчик игры: </label>
-            <input
-              type="text"
-              name="developer"
-              value={developer}
-              placeholder="Введите разработчика игры"
-            />{" "}
-            <br />
-            <button type="submit">Создать</button>
-            <button onClick={(e) => gameUpdate(e)}>Изменить</button>
-          </form>
+
+          <Form
+          style={{
+            maxWidth: 500,
+          }}
+          initialValues={{
+            remember: true,
+          }}
+          onFinish={handleSubmit}>
+            <Form.Item
+            label="Название: "
+            name="nameGame"
+            rules={[
+              {
+                required: true,
+              },
+            ]}>
+              <Input
+              placeholder="Название"/>
+            </Form.Item>
+
+            <Form.Item
+            label="Жанр игры: "
+            name="genre"
+            rules={[
+              {
+                required: false,
+              },
+            ]}>
+              <Select
+              placeholder="Выберите жанр игры">
+              {genre.map(({ id, name }) => (
+              <Option key={id} value={id}>{name}</Option>
+              ))}
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+            label="Режим игры: "
+            name="mode"
+            rules={[
+              {
+                required: true,
+              },
+            ]}>
+              <Input
+              placeholder="Режим игры"/>
+            </Form.Item>
+
+            <Form.Item
+            label="Разработчик игры: "
+            name="developer"
+            rules={[
+              {
+                required: true,
+              },
+            ]}>
+              <Input
+              placeholder="Разработчик игры"/>
+            </Form.Item>
+            <Button type="primary" htmlType="submit">
+              Добавить игру
+            </Button>
+            <Button type="primary" htmlType="button" onClick={(e) => gameUpdate(e)}>
+              Изменить игру
+            </Button>
+          </Form>
         </>
       ) : (
         ""

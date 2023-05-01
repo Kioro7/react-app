@@ -10,7 +10,7 @@ const items = [
     key: "1",
   },
   {
-    label: <Link to={"/games"}>Список игр</Link>,
+    label: <Link to={"/games"}>Магазин игр</Link>,
     key: "2",
   },
   {
