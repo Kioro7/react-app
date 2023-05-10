@@ -20,7 +20,7 @@ const LogIn = ({ user, setUser }) => {
       .then((response) => {
         // console.log(response.status)
         response.status === 200 &&
-          setUser({ isAuthenticated: true, userName: "", userRole: "" });
+          setUser({ isAuthenticated: true, id: "", userName: "", userRole: "" });
         return response.json();
       })
       .then(
@@ -30,7 +30,7 @@ const LogIn = ({ user, setUser }) => {
             typeof data !== "undefined" &&
             typeof data.userName !== "undefined"
           ) {
-            setUser({ isAuthenticated: true, userName: data.userName, userRole: data.userRole });
+            setUser({ isAuthenticated: true, id: data.id, userName: data.userName, userRole: data.userRole });
             navigate("/");
           }
           typeof data !== "undefined" &&

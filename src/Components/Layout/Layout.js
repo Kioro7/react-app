@@ -14,16 +14,20 @@ const items = [
     key: "2",
   },
   {
-    label: <Link to={"/register"}>Регистрация</Link>,
+    label: <Link to={"/myGames"}>Мои игры</Link>,
     key: "3",
   },
   {
-    label: <Link to={"/login"}>Вход</Link>,
+    label: <Link to={"/register"}>Регистрация</Link>,
     key: "4",
   },
   {
-    label: <Link to={"/logoff"}>Выход</Link>,
+    label: <Link to={"/login"}>Вход</Link>,
     key: "5",
+  },
+  {
+    label: <Link to={"/logoff"}>Выход</Link>,
+    key: "6",
   },
 ];
 
@@ -45,7 +49,7 @@ const Layout = ({ user }) => {
         </div>
         <Menu theme="dark" mode="horizontal" items={items} className="menu" />
       </Header>
-      <Content className="site-layout" style={{ padding: "0 50px" }}>
+      <Content className="site-layout" style={{ padding: "0 50px", }}>
         <Outlet />
       </Content>
       <Footer style={{ textAlign: "center" }}>GamingPlatform ©2023</Footer>

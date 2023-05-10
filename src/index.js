@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 
 import Game from "./Components/Game/Game";
+import GameInfo from "./Components/GameInfo/GameInfo"
 import GameCreate from "./Components/GameCreate/GameCreate";
 import Genre from "./Components/Genre/Genre";
+import UserGamesList from "./Components/UserGamesList/UserGamesList"
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Layout from "./Components/Layout/Layout";
@@ -14,6 +16,8 @@ import Register from "./Components/Registration/Registration";
 function App() {
   const [games, setGames] = useState([]);
   const [upGame, setUpGame] = useState({});
+  const [gameInfo, setGameInfo] = useState({});
+  const [userGames, setUserGames] = useState([]);
   const addGame = (game) => setGames([...games, game]);
   const removeGame = (removeId) =>
     setGames(games.filter(({ Id }) => Id !== removeId));
@@ -65,13 +69,23 @@ function App() {
                 <Game
                   user={user}
                   games={games}
+                  userGames={userGames}
                   setUpGame={setUpGame}
                   setGames={setGames}
                   removeGame={removeGame}
+                  setGameInfo={setGameInfo}
                 />
               </>
             }
           />
+          <Route
+            path="/gameInfo"
+            element={<GameInfo user={user} gameInfo={gameInfo} userGames={userGames} setUserGames={setUserGames}></GameInfo>}>
+          </Route>
+          <Route
+            path="/myGames"
+            element={<UserGamesList user={user} userGames={userGames} setUserGames={setUserGames}></UserGamesList>}>
+          </Route>
           <Route
             path="/register"
             element={<Register user={user} setUser={setUser} />}

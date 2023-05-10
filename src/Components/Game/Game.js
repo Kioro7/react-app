@@ -1,9 +1,13 @@
-import React, { useEffect } from "react";
-import { Card, Space, Image } from 'antd';
+import React, { useEffect, useState } from "react";
+import { Card, Space, Image, Button } from 'antd';
 import "./Style.css";
 import { Link } from "react-router-dom";
 
-const Game = ({ /*user,*/ /*setUpGame,*/ games, setGames, /*removeGame*/ }) => {
+//const { Meta } = Card;
+
+const Game = ({ user, setUpGame, games, setGames, removeGame, setGameInfo }) => {
+  const [sort, setSort] = useState([]);
+
   useEffect(() => {
     const getGames = async () => {
       const requestOptions = {
@@ -24,41 +28,58 @@ const Game = ({ /*user,*/ /*setUpGame,*/ games, setGames, /*removeGame*/ }) => {
     getGames();
   }, [setGames]);
 
-  // const deleteItem = async ({ id }) => {
-  //   const requestOptions = {
-  //     method: "DELETE",
-  //   };
-  //   return await fetch(`api/games/${id}`, requestOptions).then(
-  //     (response) => {
-  //       if (response.ok) {
-  //         removeGame(id);
-  //       }
-  //     },
-  //     (error) => console.log(error)
-  //   );
-  // };
+  const deleteItem = async ({ id }) => {
+    const requestOptions = {
+      method: "DELETE",
+    };
+    return await fetch(`api/games/${id}`, requestOptions).then(
+      (response) => {
+        if (response.ok) {
+          removeGame(id);
+        }
+      },
+      (error) => console.log(error)
+    );
+  };
 
-  // const gameItem = async ({ id }) => {
-  //   const requestOptions = {
-  //     method: "GET",
-  //   };
+  const gameItem = async ({ id }) => {
+    const requestOptions = {
+      method: "GET",
+    };
 
-  //   return await fetch(`api/games/${id}`, requestOptions)
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       setUpGame(data);
-  //     });
-  // };
+    return await fetch(`api/games/${id}`, requestOptions)
+      .then((response) => response.json())
+      .then((data) => {
+        setGameInfo(data)
+        setUpGame(data);
+      });
+  };
+
+  function SortArray(x, y){
+    return x.name.localeCompare(y.name);
+}
+
+  const sorting = async () => {
+    console.log("Games", games)
+    setSort(games.sort(SortArray))
+    games = sort
+  }
 
   return (
     <React.Fragment>
       <h3>Список игр</h3>
+      {console.log()}
+      <Button
+              type="primary"
+              onClick={() => sorting()}>
+                Сортировать
+              </Button>
       {games.map(
         ({
           id,
           name,
           mode,
-          releaseDate,
+          // releaseDate,
           price,
           developer,
           imageLink,
@@ -68,48 +89,48 @@ const Game = ({ /*user,*/ /*setUpGame,*/ games, setGames, /*removeGame*/ }) => {
           numberRatings,
           genre,
         }) => (
-          // <div className="Game" key={id} id={id}>
-          //   <strong className="GameName"> {name} </strong>
-          //   {user.isAuthenticated && user.userRole == "admin" ? (
-          //     <>
-          //       <button onClick={() => deleteItem({ id })}>Удалить</button>
-          //       <button onClick={() => gameItem({ id })}>Изменить</button>
-          //     </>
-          //   ) : (
-          //     ""
-          //   )}
-          //   <br />
-          //   Жанр игры: {genre.name} <br />
-          //   Режим игры: {mode} <br />
-          //   Дата релиза: {releaseDate} <br />
-          //   Стоимость: {price} <br />
-          //   Разработчик: {developer} <br />
-          //   Дата регистрации: {registrationDate} <br />
-          //   Описание: {description} <br />
-          //   Рейтинг: {rating} <br />
-          //   Количество оценивших: {numberRatings} <br />
-          // </div>
           <div className="Game" key={id} id={id}>
-          <Space direction="vertical">
-            <Link to={""}>
+            <Link onClick={() => gameItem({ id })} to={"/gameInfo"}>
             <Card hoverable
-              title={name}
-              style={{
-                width: 700,
-              }}>
-              <Image src={imageLink} width={300}/>
-              <p>Жанр игры: {genre.name}</p>
+              size="small"
+              title={<h2>{name}</h2>}
+              bordered={false}>
+              <Card.Grid style={{width: 300}} hoverable={false}>
+              <Image src={imageLink} width={250} preview={false}/>
+              </Card.Grid>
+              <Card.Grid style={{width: 450}} hoverable={false}>
+                <Space direction="vertical" size={0}>
+                  <p>Жанр игры: {genre.name}</p>
               <p>Режим игры: {mode}</p>
-              <p>Дата релиза: {releaseDate}</p>
-              <p>Стоимость: {price}</p>
               <p>Разработчик: {developer}</p>
+              <p>Стоимость: {price}</p>
               {/* <p>Дата регистрации: {registrationDate}</p>
               <p>Описание: {description}</p> */}
               <p>Рейтинг: {rating}</p>
               <p>Количество оценивших: {numberRatings}</p>
+                </Space>
+
+              {user.isAuthenticated && user.userRole == "admin" ? (
+              <>
+              <Space direction="horizontal" size={50}>
+            <Button
+              type="primary"
+              onClick={() => deleteItem({ id })}>
+                Удалить
+              </Button>
+              <Button
+              type="primary"
+              onClick={() => gameItem({ id })}>
+                Изменить
+              </Button>
+              </Space>
+              </>
+            ) : (
+              ""
+            )}
+            </Card.Grid>
               </Card>
             </Link>
-            </Space>
           </div>
         )
       )}
