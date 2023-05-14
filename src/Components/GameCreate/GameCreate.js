@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { Form, Button, Input, Select, Modal, Space } from "antd";
 import "./Style.css";
-import { genre } from "../../Components/Genre/Genre";
 
 const { Option } = Select;
 
-const GameCreate = ({ user, addGame, upGame, setGame }) => {
+const GameCreate = ({ user, addGame, upGame, setUpGame, games, setGames, genres }) => {
   // const [nameGame, setName] = useState("");
   // const [developer, setDeveloper] = useState("");
   // const [mode, setMode] = useState("");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form] = Form.useForm();
 
   useEffect(() => {
+    console.log(JSON.stringify(upGame));
+    if (JSON.stringify(upGame) !== "{}") {
+      setIsModalOpen(true);
+      updateGame();
+    }
     // setName(upGame.name);
     // setDeveloper(upGame.developer);
     // setMode(upGame.mode);
@@ -20,6 +25,12 @@ const GameCreate = ({ user, addGame, upGame, setGame }) => {
   }, [upGame]);
 
   const showModal = () => {
+    form.setFieldsValue({
+      nameGame: "",
+      developer: "",
+      mode: "",
+      genre: "",
+    });
     setIsModalOpen(true);
   };
   const handleOk = () => {
@@ -27,44 +38,36 @@ const GameCreate = ({ user, addGame, upGame, setGame }) => {
   };
   const handleCancel = () => {
     setIsModalOpen(false);
+    setUpGame({});
   };
 
-  // const CreateOption = () => {
-  //   return (
-  //     <React.Fragment>
-  //       <Select
-  //       placeholder="Выберите жанр игры">
-  //       {genre.map(({ id, name }) => (
-  //         <Option key={id} value={id}>{name}</Option>
-  //           // <option key={id} value={id}>
-  //           //   {name}
-  //           // </option>
-  //         ))}
-  //       </Select>
-
-  //       {/* <select name="genre">
-  //         {genre.map(({ id, name }) => (
-  //           <option key={id} value={id}>
-  //             {name}
-  //           </option>
-  //         ))}
-  //       </select> */}
-  //     </React.Fragment>
-  //   );
-  // };
+  const updateGame = () => {
+    form.setFieldsValue({
+      nameGame: upGame.name,
+      developer: upGame.developer,
+      mode: upGame.mode,
+      genre: upGame.genreId,
+    });
+  };
 
   const gameUpdate = async (e) => {
-    e.preventDefault();
+    console.log(form.getFieldsValue());
 
-    const valueName = e.target.elements.nameGame.value;
-    const valueDev = e.target.elements.developer.value;
-    const valueMode = e.target.elements.mode.value;
+    e = form.getFieldValue();
+
+    const valueName = e.nameGame;
+    const valueDev = e.developer;
+    const valueMode = e.mode;
+    const valueGenre = e.genre;
 
     const game = {
       name: valueName,
       developer: valueDev,
       mode: valueMode,
+      genreId: valueGenre,
     };
+
+    console.log(game);
 
     const requestOptions = {
       method: "PUT",
@@ -72,21 +75,17 @@ const GameCreate = ({ user, addGame, upGame, setGame }) => {
       body: JSON.stringify(game),
     };
 
-    const response = await fetch(`api/games/${upGame.id}`, requestOptions);
-
-    return await response.json().then(
-      (data) => {
-        console.log(data);
-        // response.status === 201 && addBlog(data)
-        if (response.ok) {
-          setGame(data);
-          e.target.elements.nameGame.value = "";
-          e.target.elements.developer.value = "";
-          e.target.elements.mode.value = "";
-        }
-      },
-      (error) => console.log(error)
-    );
+    return await fetch(`api/games/${upGame.id}`, requestOptions)
+    .then((response) => response.json())
+      .then((data) => {
+        console.log(data)
+        setGames(games.map(x => x.id !== data.id ? x : data));
+        setUpGame({});
+          handleOk();
+          e.nameGame = "";
+          e.developer = "";
+          e.mode = "";
+      });
   };
 
   const handleSubmit = (e) => {
@@ -96,8 +95,6 @@ const GameCreate = ({ user, addGame, upGame, setGame }) => {
     const valueDev = e.developer;
     const valueGenre = e.genre;
     const valueMode = e.mode;
-
-    console.log(genre[valueGenre]);
 
     const game = {
       name: valueName,
@@ -139,7 +136,7 @@ const GameCreate = ({ user, addGame, upGame, setGame }) => {
     <React.Fragment>
       {user.isAuthenticated && user.userRole == "admin" ? (
         <>
-          <h3>Добавление новой игры / Изменение игры</h3>
+          <h3>Добавление новой игры</h3>
 
           {/* <Form
           style={{
@@ -227,6 +224,7 @@ const GameCreate = ({ user, addGame, upGame, setGame }) => {
                 remember: true,
               }}
               onFinish={handleSubmit}
+              form={form}
             >
               <Form.Item
                 label="Название: "
@@ -250,7 +248,7 @@ const GameCreate = ({ user, addGame, upGame, setGame }) => {
                 ]}
               >
                 <Select placeholder="Выберите жанр игры">
-                  {genre.map(({ id, name }) => (
+                  {genres.map(({ id, name }) => (
                     <Option key={id} value={id}>
                       {name}
                     </Option>
@@ -282,16 +280,14 @@ const GameCreate = ({ user, addGame, upGame, setGame }) => {
                 <Input placeholder="Разработчик игры" />
               </Form.Item>
               <Space>
+                {JSON.stringify(upGame) === "{}" ? (
                 <Button type="primary" htmlType="submit">
                   Добавить игру
                 </Button>
-                <Button
-                  type="primary"
-                  htmlType="button"
-                  onClick={(e) => gameUpdate(e)}
-                >
+                ) :
+                (<Button type="primary" htmlType="button" onClick={gameUpdate}>
                   Изменить игру
-                </Button>
+                </Button>) }
               </Space>
             </Form>
           </Modal>

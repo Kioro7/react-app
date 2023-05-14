@@ -50,27 +50,27 @@ const LogIn = ({ user, setUser }) => {
         <h3>Пользователь {user.userName} успешно вошел в систему</h3>
       ) : (
         <>
-          <h3>Вход</h3>
+          <h2>Вход</h2>
           <Form onFinish={logIn} name="basic" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} style={{ maxWidth: 600 }}
             initialValues={{ remember: true }} onFinishFailed={renderErrorMessage} autoComplete="off">
-            <Form.Item label="Username" name="username"
+            <Form.Item label="Логин" name="username"
               rules={[
-                { required: true, message: "Please input your username!" },
+                { required: true, message: "Введите логин!" },
               ]}>
               <Input />
             </Form.Item>
-            <Form.Item label="Password" name="password" rules={[
-                { required: true, message: "Please input your password!" },
+            <Form.Item label="Пароль" name="password" rules={[
+                { required: true, message: "Введите пароль!" },
               ]}>
               <Input.Password />
             </Form.Item>
             <Form.Item name="remember" valuePropName="checked" wrapperCol={{ offset: 8, span: 16 }} >
-              <Checkbox>Remember me</Checkbox>
+              <Checkbox>Запомнить меня</Checkbox>
               {renderErrorMessage()}
             </Form.Item>
             <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
               <Button type="primary" htmlType="submit">
-                Submit
+                Войти
               </Button>
             </Form.Item>
           </Form>

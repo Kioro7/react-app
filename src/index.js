@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 
 import Game from "./Components/Game/Game";
@@ -15,55 +15,34 @@ import Register from "./Components/Registration/Registration";
 
 function App() {
   const [games, setGames] = useState([]);
+  const [genres, setGenres] = useState([]);
   const [upGame, setUpGame] = useState({});
   const [gameInfo, setGameInfo] = useState({});
   const [userGames, setUserGames] = useState([]);
   const addGame = (game) => setGames([...games, game]);
   const removeGame = (removeId) =>
-    setGames(games.filter(({ Id }) => Id !== removeId));
-  const [user, setUser] = useState({ isAuthenticated: false, userName: "", userRole: "" });
-
-  useEffect(() => {
-    const getUser = async () => {
-      return await fetch("api/account/isauthenticated")
-        .then((response) => {
-          response.status === 401 &&
-            setUser({ isAuthenticated: false, userName: "" });
-          return response.json();
-        })
-        .then(
-          (data) => {
-            if (
-              typeof data !== "undefined" &&
-              typeof data.userName !== "undefined"
-            ) {
-              setUser({ isAuthenticated: true, userName: data.userName });
-            }
-          },
-          (error) => {
-            console.log(error);
-          }
-        );
-    };
-    getUser();
-  }, [setUser]);
+    setGames(games.filter(({ id }) => id !== removeId));
+  const [user, setUser] = useState({ isAuthenticated: false, id: "", userName: "", userRole: "" });
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout user={user} />}>
+        <Route path="/" element={<Layout user={user} setUser={setUser} />}>
           <Route index element={<h3>Главная страница</h3>} />
           <Route
             path="/games"
             element={
               <>
-                <Genre />
+                <Genre setGenres={setGenres}/>
 
                 <GameCreate
                   user={user}
                   addGame={addGame}
                   upGame={upGame}
-                  setGame={setGames}
+                  setUpGame={setUpGame}
+                  games={games}
+                  setGames={setGames}
+                  genres={genres}
                 />
 
                 <Game
@@ -80,11 +59,11 @@ function App() {
           />
           <Route
             path="/gameInfo"
-            element={<GameInfo user={user} gameInfo={gameInfo} userGames={userGames} setUserGames={setUserGames}></GameInfo>}>
+            element={<GameInfo user={user} gameInfo={gameInfo} userGames={userGames} setUserGames={setUserGames} genres={genres}></GameInfo>}>
           </Route>
           <Route
             path="/myGames"
-            element={<UserGamesList user={user} userGames={userGames} setUserGames={setUserGames}></UserGamesList>}>
+            element={<UserGamesList user={user} userGames={userGames} setUserGames={setUserGames} games={games} setGames={setGames}></UserGamesList>}>
           </Route>
           <Route
             path="/register"

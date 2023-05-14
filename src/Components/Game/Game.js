@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { Card, Space, Image, Button } from 'antd';
+import React, { useEffect } from "react";
+import { Card, Space, Image, Button, Row, Col, Rate, Tag, Radio } from "antd";
 import "./Style.css";
 import { Link } from "react-router-dom";
 
-//const { Meta } = Card;
-
-const Game = ({ user, setUpGame, games, setGames, removeGame, setGameInfo }) => {
-  const [sort, setSort] = useState([]);
+const Game = ({
+  user,
+  setUpGame,
+  games,
+  setGames,
+  removeGame,
+  setGameInfo,
+}) => {
 
   useEffect(() => {
     const getGames = async () => {
@@ -43,6 +47,22 @@ const Game = ({ user, setUpGame, games, setGames, removeGame, setGameInfo }) => 
   };
 
   const gameItem = async ({ id }) => {
+    console.log(games.find((x) => x.id === id));
+    setGameInfo(games.find((x) => x.id === id));
+
+    // const requestOptions = {
+    //   method: "GET",
+    // };
+
+    // return await fetch(`api/games/${id}`, requestOptions)
+    //   .then((response) => response.json())
+    //   .then((data) => {
+    //     console.log(data)
+    //     setGameInfo(data)
+    //   });
+  };
+
+  const gameItems = async ({ id }) => {
     const requestOptions = {
       method: "GET",
     };
@@ -50,90 +70,108 @@ const Game = ({ user, setUpGame, games, setGames, removeGame, setGameInfo }) => 
     return await fetch(`api/games/${id}`, requestOptions)
       .then((response) => response.json())
       .then((data) => {
-        setGameInfo(data)
+        console.log(data);
         setUpGame(data);
       });
   };
 
-  function SortArray(x, y){
-    return x.name.localeCompare(y.name);
-}
+  const sortId = async () => {
+    var sortGame = [...games]
+    sortGame.sort((a, b) => a.id - b.id)
+    setGames(sortGame)
+    console.log("Sort:", games)
+  };
 
-  const sorting = async () => {
-    console.log("Games", games)
-    setSort(games.sort(SortArray))
-    games = sort
-  }
+  const sortName = async () => {
+    var sortGame = [...games]
+    sortGame.sort((a, b) => a.name > b.name ? 1 : -1)
+    setGames(sortGame)
+    console.log("Sort:", games)
+  };
+
+  const sortPrice = async () => {
+    var sortGame = [...games]
+    sortGame.sort((a, b) => a.price - b.price)
+    setGames(sortGame)
+    console.log("Sort:", games)
+  };
 
   return (
     <React.Fragment>
-      <h3>Список игр</h3>
-      {console.log()}
-      <Button
-              type="primary"
-              onClick={() => sorting()}>
-                Сортировать
-              </Button>
+      <h2 style={{textAlign: "center"}}>Список игр</h2>
+      <div>
+        <Space direction="horizontal">
+        <div style={{fontSize: 18, margin: 10, marginRight: 30}}>Сортировать: </div>
+        <Radio.Group>
+          <Radio style={{fontSize: 18}} onClick={sortId} value={1}>По умолчанию</Radio>
+          <Radio style={{fontSize: 18}} onClick={sortName} value={2}>По алфавиту</Radio>
+          <Radio style={{fontSize: 18}} onClick={sortPrice} value={3}>По цене</Radio>
+        </Radio.Group>
+        </Space>
+      </div>
+      <div>
       {games.map(
         ({
           id,
           name,
           mode,
-          // releaseDate,
           price,
           developer,
           imageLink,
-          // registrationDate,
-          // description,
           rating,
           numberRatings,
           genre,
         }) => (
-          <div className="Game" key={id} id={id}>
+          <Space className="Game" key={id} id={id} align="center" wrap direction="vertical">
             <Link onClick={() => gameItem({ id })} to={"/gameInfo"}>
-            <Card hoverable
-              size="small"
-              title={<h2>{name}</h2>}
-              bordered={false}>
-              <Card.Grid style={{width: 300}} hoverable={false}>
-              <Image src={imageLink} width={250} preview={false}/>
-              </Card.Grid>
-              <Card.Grid style={{width: 450}} hoverable={false}>
-                <Space direction="vertical" size={0}>
-                  <p>Жанр игры: {genre.name}</p>
-              <p>Режим игры: {mode}</p>
-              <p>Разработчик: {developer}</p>
-              <p>Стоимость: {price}</p>
-              {/* <p>Дата регистрации: {registrationDate}</p>
-              <p>Описание: {description}</p> */}
-              <p>Рейтинг: {rating}</p>
-              <p>Количество оценивших: {numberRatings}</p>
+              <Card
+                hoverable
+                size="small"
+                style={{ border: 0, padding: 10, margin: 10, width: 300, height: 400 }}
+              >
+                <Row justify={"start"}>
+                  <Col>
+                    <Row justify={"center"} style={{fontSize: 20, fontWeight: "bold", textAlign: "center", marginBottom: 10}}>
+                      <div>{name}</div>
+                    </Row>
+                    <Row justify={"center"}>
+                      <Image src={imageLink} width={250} preview={false} style={{marginBottom: 10}} />
+                    </Row>
+                    <Row justify={"center"} style={{marginBottom: 10, marginTop: 10}}>
+                      <Tag color="blue" style={{fontSize: 16, padding: 3, margin: 3}}>{genre.name}</Tag>
+                      <Tag color="blue" style={{fontSize: 16, padding: 3, margin: 3}}>{mode}</Tag>
+                      <Tag color="blue" style={{fontSize: 16, padding: 3, margin: 3}}>{developer}</Tag>
+                    </Row>
+                    <Row justify={"center"}>
+                      <div style={{ fontSize: 16 }}>
+                        Оценка: <Rate disabled value={rating} /> / {numberRatings}
+                      </div>
+                    </Row>
+                    <Row justify={"center"}>
+                      <div style={{ fontSize: 16, fontWeight: "bolder" }}>
+                        <div>Цена: {price} руб.</div>
+                      </div>
+                    </Row>
+                  </Col>
+                </Row>
+              </Card>
+            </Link>
+            {user.isAuthenticated && user.userRole == "admin" ? (
+                <Space direction="horizontal" size={30}>
+                  <Button type="primary" onClick={() => deleteItem({ id })}>
+                    Удалить
+                  </Button>
+                  <Button type="primary" onClick={() => gameItems({ id })}>
+                    Изменить
+                  </Button>
                 </Space>
-
-              {user.isAuthenticated && user.userRole == "admin" ? (
-              <>
-              <Space direction="horizontal" size={50}>
-            <Button
-              type="primary"
-              onClick={() => deleteItem({ id })}>
-                Удалить
-              </Button>
-              <Button
-              type="primary"
-              onClick={() => gameItem({ id })}>
-                Изменить
-              </Button>
-              </Space>
-              </>
             ) : (
               ""
             )}
-            </Card.Grid>
-              </Card>
-            </Link>
-          </div>
+          </Space>
         )
       )}
+      </div>
     </React.Fragment>
   );
 };

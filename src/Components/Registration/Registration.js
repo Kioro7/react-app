@@ -1,31 +1,28 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Form, Button, Input } from "antd";
 
 const Register = ({ user, setUser }) => {
   const [errorMessages, setErrorMessages] = useState([]);
   const navigate = useNavigate();
 
   const Register = async (event) => {
-    event.preventDefault();
-
-    var { email, nickname, password, passwordConfirm } = document.forms[0];
-    // console.log(email.value, password.value)
 
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: email.value,
-        nickname: nickname.value,
-        password: password.value,
-        passwordConfirm: passwordConfirm.value,
+        email: event.email,
+        nickname: event.nickname,
+        password: event.password,
+        passwordConfirm: event.passwordConfirm,
       }),
     };
     return await fetch("api/account/register", requestOptions)
       .then((response) => {
         // console.log(response.status)
         response.status === 200 &&
-          setUser({ isAuthenticated: true, userName: "", userRole: "" });
+          setUser({ isAuthenticated: true, id: "", userName: "", userRole: "" });
         return response.json();
       })
       .then(
@@ -35,7 +32,7 @@ const Register = ({ user, setUser }) => {
             typeof data !== "undefined" &&
             typeof data.userName !== "undefined"
           ) {
-            setUser({ isAuthenticated: true, userName: data.userName, userRole: data.userRole });
+            setUser({ isAuthenticated: true, id: data.id, userName: data.userName, userRole: data.userRole });
             navigate("/");
           }
           typeof data !== "undefined" &&
@@ -57,26 +54,50 @@ const Register = ({ user, setUser }) => {
         <h3>Пользователь {user.userName} успешно зарегистрирован!</h3>
       ) : (
         <>
-          <h3>Вход</h3>
-          <form onSubmit={Register}>
-            <label>Почта </label>
-            <input type="text" name="email" placeholder="Почта" />
-            <br />
-            <label>Никнейм </label>
-            <input type="text" name="nickname" placeholder="Никнейм" />
-            <br />
-            <label>Пароль </label>
-            <input type="text" name="password" placeholder="Пароль" />
-            <br />
-            <label>Подтверждение пароля </label>
-            <input
-              type="text"
-              name="passwordConfirm"
-              placeholder="Подтверждение пароля"
-            />
-            <br />
-            <button type="submit">Войти</button>
-          </form>
+          <h2>Регистрация</h2>
+          <Form onFinish={Register}>
+            <Form.Item
+            label="Почта"
+            name="email"
+            rules={[
+              {
+                required: true,
+              },
+            ]}>
+              <Input placeholder="Почта" />
+            </Form.Item>
+            <Form.Item
+            label="Никнейм"
+            name="nickname"
+            rules={[
+              {
+                required: true,
+              },
+            ]}>
+              <Input placeholder="Никнейм" />
+            </Form.Item>
+            <Form.Item
+            label="Пароль"
+            name="password"
+            rules={[
+              {
+                required: true,
+              },
+            ]}>
+              <Input placeholder="Пароль" />
+            </Form.Item>
+            <Form.Item
+            label="Подтверждение пароля"
+            name="passwordConfirm"
+            rules={[
+              {
+                required: true,
+              },
+            ]}>
+              <Input placeholder="Подтверждение пароля" />
+            </Form.Item>
+            <Button htmlType="submit" type="primary">Зарегистрироваться</Button>
+          </Form>
           {renderErrorMessage()}
         </>
       )}

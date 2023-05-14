@@ -1,8 +1,6 @@
 import { useEffect } from 'react'
 
-export let genre = [{}]
-
-const Genre = () => {
+const Genre = ({setGenres}) => {
     useEffect(() => {
         const getGenres = async () => {
             const requestOptions = {
@@ -13,7 +11,7 @@ const Genre = () => {
                 .then(response => response.json())
                 .then((data) => {
                         console.log('Data:', data)
-                        genre = data
+                        setGenres(data)
                     },
                     (error) => {
                         console.log(error)
@@ -21,6 +19,6 @@ const Genre = () => {
                 )
         }
         getGenres()
-    })
+    }, [setGenres])
 }
 export default Genre
